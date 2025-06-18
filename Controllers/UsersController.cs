@@ -26,8 +26,8 @@ namespace ForumWebsite.Controllers
         [HttpPost("login")]
         public async Task<IActionResult> Login(LoginDto dto)
         {
-            var token = await _userService.Login(dto);
-            return Ok(new { token });
+            var result = await _userService.Login(dto);
+            return Ok(result);
         }
     }
 }

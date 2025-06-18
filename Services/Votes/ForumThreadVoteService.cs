@@ -1,6 +1,6 @@
 ﻿namespace ForumWebsite.Services.Votes
 {
-    public class ForumThreadSerivice
+    public class ForumThreadVoteService
     {
     }
 }

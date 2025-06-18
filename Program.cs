@@ -4,11 +4,14 @@ using ForumWebsite.Repositories.ForumThreads;
 using ForumWebsite.Repositories.Users;
 using ForumWebsite.Repositories.Votes;
 using ForumWebsite.Services.Comments;
+using ForumWebsite.Services.ForumThreads;
 using ForumWebsite.Services.Users;
 using ForumWebsite.Services.Votes;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System.Security.Claims;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,11 +22,41 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(c =>
+{
+    c.SwaggerDoc("v1", new OpenApiInfo { Title = "Forum API", Version = "v1" });
+
+    // ✅ Cấu hình xác thực Bearer Token cho Swagger
+    c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "Bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Nhập token theo định dạng: Bearer {your token}"
+    });
+
+    c.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+});
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
 
 var jwtSettings = builder.Configuration.GetSection("Jwt");
 var secretKey = jwtSettings["Key"];
+
 
 builder.Services.AddAuthentication(options =>
 {
@@ -36,6 +69,7 @@ builder.Services.AddAuthentication(options =>
     //Cấu hình cách xác thực token
     options.TokenValidationParameters = new TokenValidationParameters
     {
+        NameClaimType = ClaimTypes.NameIdentifier,
         ValidateIssuer = true, 
         ValidateAudience = true,
         ValidateLifetime = true, 
@@ -56,13 +90,15 @@ builder.Services.AddScoped<IForumThreadVoteRepository, ForumThreadVoteRepository
 
 
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IForumThreadService, ForumThreadService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
 //builder.Services.AddScoped<ICommentVoteService, CommentVoteService>();
 
 
 
 var app = builder.Build();
-
+Console.WriteLine("🛠️ Secret key backend đang dùng: " + secretKey);
+Console.WriteLine("🌍 ENV đang chạy: " + builder.Environment.EnvironmentName);
 // Configure the HTTP request pipeline.
 if (app.Environment.IsDevelopment())
 {
@@ -71,7 +107,14 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.Use(async (context, next) =>
+{
+    Console.WriteLine("🛠️ Secret key backend đang dùng: " + secretKey);
+    Console.WriteLine("🌍 ENV đang chạy: " + builder.Environment.EnvironmentName);
+    await next();
+});
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

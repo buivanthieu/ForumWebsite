@@ -12,6 +12,20 @@ namespace ForumWebsite.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Topics",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Topics", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Users",
                 columns: table => new
                 {
@@ -35,13 +49,19 @@ namespace ForumWebsite.Migrations
                         .Annotation("SqlServer:Identity", "1, 1"),
                     Title = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Content = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Topic = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     CreatedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    TopicId = table.Column<int>(type: "int", nullable: false),
                     UserId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_ForumThreads", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_ForumThreads_Topics_TopicId",
+                        column: x => x.TopicId,
+                        principalTable: "Topics",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
                     table.ForeignKey(
                         name: "FK_ForumThreads_Users_UserId",
                         column: x => x.UserId,
@@ -86,7 +106,7 @@ namespace ForumWebsite.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "ThreadVotes",
+                name: "ForumThreadVotes",
                 columns: table => new
                 {
                     UserId = table.Column<int>(type: "int", nullable: false),
@@ -96,15 +116,15 @@ namespace ForumWebsite.Migrations
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_ThreadVotes", x => new { x.UserId, x.ForumThreadId });
+                    table.PrimaryKey("PK_ForumThreadVotes", x => new { x.UserId, x.ForumThreadId });
                     table.ForeignKey(
-                        name: "FK_ThreadVotes_ForumThreads_ForumThreadId",
+                        name: "FK_ForumThreadVotes_ForumThreads_ForumThreadId",
                         column: x => x.ForumThreadId,
                         principalTable: "ForumThreads",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
-                        name: "FK_ThreadVotes_Users_UserId",
+                        name: "FK_ForumThreadVotes_Users_UserId",
                         column: x => x.UserId,
                         principalTable: "Users",
                         principalColumn: "Id",
@@ -158,13 +178,18 @@ namespace ForumWebsite.Migrations
                 column: "CommentId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_ForumThreads_TopicId",
+                table: "ForumThreads",
+                column: "TopicId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ForumThreads_UserId",
                 table: "ForumThreads",
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_ThreadVotes_ForumThreadId",
-                table: "ThreadVotes",
+                name: "IX_ForumThreadVotes_ForumThreadId",
+                table: "ForumThreadVotes",
                 column: "ForumThreadId");
         }
 
@@ -175,13 +200,16 @@ namespace ForumWebsite.Migrations
                 name: "CommentVotes");
 
             migrationBuilder.DropTable(
-                name: "ThreadVotes");
+                name: "ForumThreadVotes");
 
             migrationBuilder.DropTable(
                 name: "Comments");
 
             migrationBuilder.DropTable(
                 name: "ForumThreads");
+
+            migrationBuilder.DropTable(
+                name: "Topics");
 
             migrationBuilder.DropTable(
                 name: "Users");

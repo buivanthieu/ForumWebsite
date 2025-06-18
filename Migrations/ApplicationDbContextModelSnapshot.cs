@@ -97,14 +97,15 @@ namespace ForumWebsite.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<string>("Topic")
-                        .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                    b.Property<int>("TopicId")
+                        .HasColumnType("int");
 
                     b.Property<int?>("UserId")
                         .HasColumnType("int");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("TopicId");
 
                     b.HasIndex("UserId");
 
@@ -129,7 +130,28 @@ namespace ForumWebsite.Migrations
 
                     b.HasIndex("ForumThreadId");
 
-                    b.ToTable("ThreadVotes");
+                    b.ToTable("ForumThreadVotes");
+                });
+
+            modelBuilder.Entity("ForumWebsite.Models.Topic", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Topics");
                 });
 
             modelBuilder.Entity("ForumWebsite.Models.User", b =>
@@ -206,10 +228,18 @@ namespace ForumWebsite.Migrations
 
             modelBuilder.Entity("ForumWebsite.Models.ForumThread", b =>
                 {
+                    b.HasOne("ForumWebsite.Models.Topic", "Topic")
+                        .WithMany("ForumThreads")
+                        .HasForeignKey("TopicId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.HasOne("ForumWebsite.Models.User", "User")
                         .WithMany("ForumThreads")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict);
+
+                    b.Navigation("Topic");
 
                     b.Navigation("User");
                 });
@@ -245,6 +275,11 @@ namespace ForumWebsite.Migrations
                     b.Navigation("Comments");
 
                     b.Navigation("Votes");
+                });
+
+            modelBuilder.Entity("ForumWebsite.Models.Topic", b =>
+                {
+                    b.Navigation("ForumThreads");
                 });
 
             modelBuilder.Entity("ForumWebsite.Models.User", b =>

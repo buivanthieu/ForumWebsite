@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using ForumWebsite.Dtos.ForumThreads;
+using ForumWebsite.Models;
 using ForumWebsite.Repositories.ForumThreads;
 
 namespace ForumWebsite.Services.ForumThreads
@@ -14,14 +15,26 @@ namespace ForumWebsite.Services.ForumThreads
             _mapper = mapper;
         }
 
-        public Task<ForumThreadDto> CreateThread(CreateForumThreadDto dto, int userId)
+        public async Task<ForumThreadDto> CreateThread(CreateForumThreadDto dto, int userId)
         {
-            throw new NotImplementedException();
+            var forumThread = _mapper.Map<ForumThread>(dto);
+            forumThread.UserId = userId;
+            forumThread.CreatedAt = DateTime.Now;
+
+            await _forumThreadRepository.AddForumThread(forumThread);
+            return _mapper.Map<ForumThreadDto>(forumThread);
+
         }
 
-        public Task DeleteThread(int threadId, int userId)
+        public async Task DeleteThread(int threadId, int userId)
         {
-            throw new NotImplementedException();
+            var thread = await _forumThreadRepository.GetForumThreadById(threadId);
+            if(thread.UserId == userId)
+            {
+                throw new UnauthorizedAccessException("You are not authorized to delete this thread.");
+            }
+            await _forumThreadRepository.DeleteForumThread(threadId);
+
         }
 
         public async Task<ForumThreadDto> GetThreadById(int threadId)
@@ -42,9 +55,15 @@ namespace ForumWebsite.Services.ForumThreads
             return _mapper.Map<ICollection<ForumThreadDto>>(threads);
         }
 
-        public Task UpdateThread(int threadId, UpdateForumThreadDto dto, int userId)
+        public async Task UpdateThread(int threadId, UpdateForumThreadDto updateForumThreadDto, int userId)
         {
-            throw new NotImplementedException();
+            var thread = await _forumThreadRepository.GetForumThreadById(threadId);
+            if (thread.UserId != userId)
+            {
+                throw new UnauthorizedAccessException("You are not authorized to edit this thread.");
+            }
+            thread.Content = updateForumThreadDto.Content;
+            await _forumThreadRepository.UpdateForumThread(thread);
         }
     }
 }

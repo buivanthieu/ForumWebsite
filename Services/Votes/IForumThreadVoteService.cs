@@ -1,6 +1,6 @@
 ﻿namespace ForumWebsite.Services.Votes
 {
-    public interface IForumThreadSerivice
+    public interface IForumThreadVoteService
     {
     }
 }

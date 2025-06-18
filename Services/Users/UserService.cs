@@ -43,15 +43,18 @@ namespace ForumWebsite.Services.Users
             return _mapper.Map<UserDto>(user);
         }
 
-        public async Task<string> Login(LoginDto dto)
+        public async Task<LoginSuccessfullyDto> Login(LoginDto dto)
         {
-            var user = await _userRepository.GetByUsername(dto.Email)
-                ?? throw new KeyNotFoundException("User not found");
+            var user = await _userRepository.GetByEmailUser(dto.Email)
+                ?? throw new KeyNotFoundException("Email not found");
 
             if (!BCrypt.Net.BCrypt.Verify(dto.Password, user.PasswordHash))
                 throw new UnauthorizedAccessException("Invalid credentials");
 
-            return GenerateJwtToken(user);
+            var token = GenerateJwtToken(user);
+            var loginSuccessfullyDto = _mapper.Map<LoginSuccessfullyDto>(user);
+            loginSuccessfullyDto.Token = token;
+            return loginSuccessfullyDto;
         }
 
         public async Task<UserDto> GetProfile(int userId)
@@ -67,12 +70,13 @@ namespace ForumWebsite.Services.Users
             var creds = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             var claims = new[]
-            {
-            new Claim(JwtRegisteredClaimNames.Sub, user.Username),
-            new Claim("id", user.Id.ToString()),
-            new Claim(ClaimTypes.Role, user.Role),
-            new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
-        };
+                {
+                    new Claim(JwtRegisteredClaimNames.Sub, user.Username),
+                    new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+                    new Claim(ClaimTypes.Role, user.Role),
+                    new Claim(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
+                };
+
 
             var token = new JwtSecurityToken(
                 issuer: jwtSettings["Issuer"],
@@ -81,6 +85,7 @@ namespace ForumWebsite.Services.Users
                 expires: DateTime.UtcNow.AddMinutes(double.Parse(jwtSettings["ExpiresInMinutes"]!)),
                 signingCredentials: creds
             );
+            Console.WriteLine("🔐 Secret key khi generate token: " + jwtSettings["Key"]);
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
