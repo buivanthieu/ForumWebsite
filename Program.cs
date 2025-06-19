@@ -3,6 +3,7 @@ using ForumWebsite.Repositories.Comments;
 using ForumWebsite.Repositories.ForumThreads;
 using ForumWebsite.Repositories.Users;
 using ForumWebsite.Repositories.Votes;
+using ForumWebsite.Services.Auths;
 using ForumWebsite.Services.Comments;
 using ForumWebsite.Services.ForumThreads;
 using ForumWebsite.Services.Users;
@@ -89,11 +90,10 @@ builder.Services.AddScoped<ICommentVoteRepository, CommentVoteRepository>();
 builder.Services.AddScoped<IForumThreadVoteRepository, ForumThreadVoteRepository>();
 
 
-builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IForumThreadService, ForumThreadService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
-//builder.Services.AddScoped<ICommentVoteService, CommentVoteService>();
-
+builder.Services.AddScoped<IUserService, UserService>();
 
 
 var app = builder.Build();

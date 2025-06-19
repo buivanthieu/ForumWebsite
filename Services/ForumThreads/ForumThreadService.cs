@@ -29,7 +29,7 @@ namespace ForumWebsite.Services.ForumThreads
         public async Task DeleteThread(int threadId, int userId)
         {
             var thread = await _forumThreadRepository.GetForumThreadById(threadId);
-            if(thread.UserId == userId)
+            if(thread.UserId != userId)
             {
                 throw new UnauthorizedAccessException("You are not authorized to delete this thread.");
             }
@@ -62,7 +62,9 @@ namespace ForumWebsite.Services.ForumThreads
             {
                 throw new UnauthorizedAccessException("You are not authorized to edit this thread.");
             }
+            thread.Title = updateForumThreadDto.Title;
             thread.Content = updateForumThreadDto.Content;
+            thread.TopicId = updateForumThreadDto.TopicId ?? thread.TopicId;
             await _forumThreadRepository.UpdateForumThread(thread);
         }
     }

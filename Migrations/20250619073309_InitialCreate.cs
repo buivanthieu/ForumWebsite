@@ -34,7 +34,17 @@ namespace ForumWebsite.Migrations
                     Username = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     Email = table.Column<string>(type: "nvarchar(max)", nullable: false),
                     PasswordHash = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    Role = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    Role = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DisplayName = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    DateOfBirth = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    AvatarUrl = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Bio = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Location = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    JoinedAt = table.Column<DateTime>(type: "datetime2", nullable: false),
+                    IsBanned = table.Column<bool>(type: "bit", nullable: false),
+                    Reputation = table.Column<int>(type: "int", nullable: false),
+                    TotalThreads = table.Column<int>(type: "int", nullable: false),
+                    TotalComments = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {

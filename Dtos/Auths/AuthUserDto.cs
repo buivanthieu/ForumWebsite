@@ -1,6 +1,6 @@
-﻿namespace ForumWebsite.Dtos.Users
+﻿namespace ForumWebsite.Dtos.Auths
 {
-    public class UserDto
+    public class AuthUserDto
     {
         public int Id { get; set; }
         public string Username { get; set; } = null!;

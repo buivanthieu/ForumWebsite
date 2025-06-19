@@ -37,5 +37,15 @@ namespace ForumWebsite.Repositories.Votes
             _context.ForumThreadVotes.Remove(vote);
             await _context.SaveChangesAsync();
         }
+        public async Task<int> GetCountVoteForumThread(int forumThreadId)
+        {
+            var upVotes = await _context.ForumThreadVotes
+                .CountAsync(v => v.ForumThreadId == forumThreadId && v.IsUpvote);
+            var downVotes = await _context.ForumThreadVotes
+                .CountAsync(v => v.ForumThreadId == forumThreadId && !v.IsUpvote);
+            return upVotes - downVotes;
+        }
+
+      
     }
 }

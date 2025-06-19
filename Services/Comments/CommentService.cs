@@ -65,5 +65,21 @@ namespace ForumWebsite.Services.Comments
 
             await _commentRepository.UpdateComment(comment);
         }
+
+        public async Task<CommentDto> ReplyComment(ReplyCommentDto replyCommentDto, int userId, int parentCommentId)
+        {
+            var parentComment = await _commentRepository.GetCommentById(parentCommentId);
+            if (parentComment == null)
+            {
+                throw new ArgumentException("Parent comment does not exist");
+            }
+            var comment = _mapper.Map<Comment>(replyCommentDto);
+            comment.ThreadId = parentComment.ThreadId;
+            comment.UserId = userId;
+            comment.ParentCommentId = parentCommentId;
+            comment.CreatedAt = DateTime.UtcNow;
+            await _commentRepository.AddComment(comment);
+            return _mapper.Map<CommentDto>(comment)!;
+        } 
     }
 }

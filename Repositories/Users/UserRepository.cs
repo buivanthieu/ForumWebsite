@@ -36,7 +36,7 @@ namespace ForumWebsite.Repositories.Users
 
         public async Task<User> GetUserById(int id)
         {
-            var user = await _context.Users.FindAsync($"{id}")
+            var user = await _context.Users.FindAsync(id)
                           ?? throw new KeyNotFoundException("key is null");
 
             return user;
@@ -50,16 +50,16 @@ namespace ForumWebsite.Repositories.Users
             _context.Entry(existingUser).CurrentValues.SetValues(user);
             await _context.SaveChangesAsync();
         }
-        public async Task<User?> GetByEmailUser(string emailUser)
+        public async Task<User?> GetByEmailUser(string email)
         {
             var existingUser = await _context.Users
-                .FirstOrDefaultAsync(u => u.Email == emailUser);
+                .FirstOrDefaultAsync(u => u.Email == email);
             return existingUser;
         }
-        public async Task<User?> GetByUsername(string usernameUser)
+        public async Task<User?> GetByUsername(string username)
         {
             var existingUser = await _context.Users
-                .FirstOrDefaultAsync(u => u.Username == usernameUser);
+                .FirstOrDefaultAsync(u => u.Username == username);
             return existingUser;
         }
 

@@ -1,4 +1,4 @@
-﻿namespace ForumWebsite.Dtos.Users
+﻿namespace ForumWebsite.Dtos.Auths
 {
     public class LoginSuccessfullyDto
     {

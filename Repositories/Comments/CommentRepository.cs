@@ -35,7 +35,7 @@ namespace ForumWebsite.Repositories.Comments
 
         public async Task<Comment> GetCommentById(int id)
         {
-            var comment = await _context.Comments.FindAsync($"{id}")
+            var comment = await _context.Comments.FindAsync(id)
                           ?? throw new KeyNotFoundException("key is null");
 
             return comment;

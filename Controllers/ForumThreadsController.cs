@@ -37,7 +37,7 @@ namespace ForumWebsite.Controllers
 
         [Authorize]
         [HttpPost("create-thread")]
-        public async Task<IActionResult> CreateThread(CreateForumThreadDto createForumThreadDto)
+        public async Task<IActionResult> CreateThread([FromBody] CreateForumThreadDto createForumThreadDto)
         {
             var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
@@ -57,15 +57,13 @@ namespace ForumWebsite.Controllers
 
         [Authorize]
         [HttpPut("update-thread")]
-        public async Task<IActionResult> UpdateThread(int threadId, UpdateForumThreadDto updateForumThreadDto)
+        public async Task<IActionResult> UpdateThread(int threadId,[FromBody] UpdateForumThreadDto updateForumThreadDto)
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            int userId = 1;
-
-            if (userIdClaim != null && int.TryParse(userIdClaim.Value, out var parsedUserId))
+            if (!int.TryParse(userIdClaim, out var userId))
             {
-                userId = parsedUserId;
+                return Unauthorized();
             }
             await _forumThreadService.UpdateThread(threadId, updateForumThreadDto, userId);
             return Ok("Updated successfully");
@@ -75,16 +73,14 @@ namespace ForumWebsite.Controllers
         [Authorize]
         public async Task<IActionResult> DeleteThread(int threadId)
         {
-            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier);
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
-            int userId = 1;
-
-            if (userIdClaim != null && int.TryParse(userIdClaim.Value, out var parsedUserId))
+            if (!int.TryParse(userIdClaim, out var userId))
             {
-                userId = parsedUserId;
+                return Unauthorized();
             }
             await _forumThreadService.DeleteThread(threadId, userId);
-            return Ok("delet successfullt");
+            return Ok("delete successfullt");
         }
     }
 }

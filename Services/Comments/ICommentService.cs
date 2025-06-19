@@ -10,5 +10,6 @@ namespace ForumWebsite.Services.Comments
         Task UpdateComment(int commentId, UpdateCommentDto dto, int userId);
         Task DeleteComment(int commentId, int userId);
         Task<(int upvotes, int downvotes)> GetVoteSummary(int commentId);
+        Task<CommentDto> ReplyComment(ReplyCommentDto replyCommentDto, int userId, int parentCommentId);
     }
 }
