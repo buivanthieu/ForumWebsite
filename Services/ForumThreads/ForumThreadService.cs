@@ -2,6 +2,9 @@
 using ForumWebsite.Dtos.ForumThreads;
 using ForumWebsite.Models;
 using ForumWebsite.Repositories.ForumThreads;
+using ForumWebsite.Repositories.ThreadTags;
+using ForumWebsite.Repositories.Users;
+using System.Threading;
 
 namespace ForumWebsite.Services.ForumThreads
 {
@@ -9,10 +12,15 @@ namespace ForumWebsite.Services.ForumThreads
     {
         private readonly IForumThreadRepository _forumThreadRepository;
         private readonly IMapper _mapper;
-        public ForumThreadService(IForumThreadRepository forumThreadRepository, IMapper mapper)
+        private readonly IUserRepository _userRepository;
+        private readonly IThreadTagRepository _threadTagRepository;
+        public ForumThreadService(IForumThreadRepository forumThreadRepository, IMapper mapper, 
+            IUserRepository userRepository, IThreadTagRepository threadTagRepository)
         {
             _forumThreadRepository = forumThreadRepository;
             _mapper = mapper;
+            _userRepository = userRepository;
+            _threadTagRepository = threadTagRepository;
         }
 
         public async Task<ForumThreadDto> CreateThread(CreateForumThreadDto dto, int userId)
@@ -22,6 +30,24 @@ namespace ForumWebsite.Services.ForumThreads
             forumThread.CreatedAt = DateTime.Now;
 
             await _forumThreadRepository.AddForumThread(forumThread);
+
+
+            var user = await _userRepository.GetUserById(userId);
+            user.TotalThreads += 1;
+            await _userRepository.UpdateUser(user);
+
+            if (dto.TagIds is not null && dto.TagIds.Any())
+            {
+                foreach (var tagId in dto.TagIds)
+                {
+                    var threadTag = new ThreadTag
+                    {
+                        ForumThreadId = forumThread.Id,
+                        TagId = tagId
+                    };
+                    await _threadTagRepository.CreateThreadTag(threadTag);
+                }
+            }
             return _mapper.Map<ForumThreadDto>(forumThread);
 
         }
@@ -35,6 +61,9 @@ namespace ForumWebsite.Services.ForumThreads
             }
             await _forumThreadRepository.DeleteForumThread(threadId);
 
+            var user = await _userRepository.GetUserById(userId);
+            user.TotalThreads -= 1;
+            await _userRepository.UpdateUser(user);
         }
 
         public async Task<ForumThreadDto> GetThreadById(int threadId)

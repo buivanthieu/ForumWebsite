@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ForumWebsite.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250619073309_InitialCreate")]
+    [Migration("20250622073730_InitialCreate")]
     partial class InitialCreate
     {
         /// <inheritdoc />
@@ -41,6 +41,9 @@ namespace ForumWebsite.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<int?>("ParentCommentId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("Reputation")
                         .HasColumnType("int");
 
                     b.Property<int?>("ThreadId")
@@ -95,6 +98,9 @@ namespace ForumWebsite.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("Reputation")
+                        .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .IsRequired()

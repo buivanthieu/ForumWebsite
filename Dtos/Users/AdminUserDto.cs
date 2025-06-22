@@ -1,4 +1,7 @@
-﻿using ForumWebsite.Models;
+﻿using ForumWebsite.Dtos.Comments;
+using ForumWebsite.Dtos.ForumThreads;
+using ForumWebsite.Dtos.Votes;
+using ForumWebsite.Models;
 
 namespace ForumWebsite.Dtos.Users
 {
@@ -20,9 +23,9 @@ namespace ForumWebsite.Dtos.Users
         public int TotalThreads { get; set; }
         public int TotalComments { get; set; }
 
-        public ICollection<ForumThread>? ForumThreads { get; set; }
-        public ICollection<Comment>? Comments { get; set; }
-        public ICollection<CommentVote>? CommentVotes { get; set; }
-        public ICollection<ForumThreadVote>? ForumThreadVotes { get; set; }
+        public ICollection<ForumThreadDto>? ForumThreads { get; set; }
+        public ICollection<CommentDto>? Comments { get; set; }
+        //public ICollection<CommentVoteDto>? CommentVotes { get; set; }
+        //public ICollection<ForumThreadVoteDto>? ForumThreadVotes { get; set; }
     }
 }

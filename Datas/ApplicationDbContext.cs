@@ -12,6 +12,8 @@ namespace ForumWebsite.Datas
         public DbSet<Comment> Comments { get; set; }
         public DbSet<ForumThreadVote> ForumThreadVotes { get; set; }
         public DbSet<CommentVote> CommentVotes { get; set; }
+        public DbSet<Tag> Tags { get; set; }
+        public DbSet<ThreadTag> ThreadTags { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Comment>()
@@ -69,6 +71,20 @@ namespace ForumWebsite.Datas
                 .HasOne(fv => fv.ForumThread)
                 .WithMany(c => c.Votes)
                 .HasForeignKey(fv => fv.ForumThreadId);
+
+            modelBuilder.Entity<ThreadTag>()
+                .HasKey(tt => new { tt.ForumThreadId, tt.TagId });
+
+            modelBuilder.Entity<ThreadTag>()
+                .HasOne(tt => tt.ForumThread)
+                .WithMany(t => t.ThreadTags)
+                .HasForeignKey(tt => tt.ForumThreadId);
+
+            modelBuilder.Entity<ThreadTag>()
+                .HasOne(tt => tt.Tag)
+                .WithMany(t => t.ThreadTags)
+                .HasForeignKey(tt => tt.TagId);
+
         }
     }
 }

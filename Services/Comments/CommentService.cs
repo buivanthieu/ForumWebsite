@@ -2,6 +2,7 @@
 using ForumWebsite.Dtos.Comments;
 using ForumWebsite.Models;
 using ForumWebsite.Repositories.Comments;
+using ForumWebsite.Repositories.Users;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 
 namespace ForumWebsite.Services.Comments
@@ -10,10 +11,12 @@ namespace ForumWebsite.Services.Comments
     {
         private readonly ICommentRepository _commentRepository;
         private readonly IMapper _mapper;
-        public CommentService (ICommentRepository commentRepository, IMapper mapper)
+        private readonly IUserRepository _userRepository;
+        public CommentService (ICommentRepository commentRepository, IMapper mapper, IUserRepository userRepository)
         {
             _commentRepository = commentRepository;
             _mapper = mapper;
+            _userRepository = userRepository;
         }
         public async Task<CommentDto> CreateComment(CreateCommentDto dto, int userId)
         {
@@ -21,6 +24,10 @@ namespace ForumWebsite.Services.Comments
             comment.UserId = userId;
             comment.CreatedAt = DateTime.UtcNow;
             await _commentRepository.AddComment(comment);
+
+            var user = await _userRepository.GetUserById(userId);
+            user.TotalComments += 1;
+            await _userRepository.UpdateUser(user);
             return _mapper.Map<CommentDto>(comment)!;
         }
 
@@ -33,6 +40,10 @@ namespace ForumWebsite.Services.Comments
                 throw new UnauthorizedAccessException("You are not allowed to delete this comment");
 
             await _commentRepository.DeleteComment(commentId);
+
+            var user = await _userRepository.GetUserById(userId);
+            user.TotalComments -= 1;
+            await _userRepository.UpdateUser(user);
         }
 
         public async Task<CommentDto> GetCommentById(int commentId)
@@ -79,6 +90,9 @@ namespace ForumWebsite.Services.Comments
             comment.ParentCommentId = parentCommentId;
             comment.CreatedAt = DateTime.UtcNow;
             await _commentRepository.AddComment(comment);
+            var user = await _userRepository.GetUserById(userId);
+            user.TotalComments += 1;
+            await _userRepository.UpdateUser(user);
             return _mapper.Map<CommentDto>(comment)!;
         } 
     }

@@ -1,6 +1,7 @@
 ﻿using AutoMapper;
 using ForumWebsite.Dtos.Users;
 using ForumWebsite.Repositories.Users;
+using ForumWebsite.Repositories.Votes;
 
 namespace ForumWebsite.Services.Users
 {
@@ -8,6 +9,7 @@ namespace ForumWebsite.Services.Users
     {
         private readonly IUserRepository _userRepository;
         private readonly IMapper _mapper;
+        
 
         public UserService(IUserRepository userRepository, IMapper mapper)
         {

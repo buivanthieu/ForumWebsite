@@ -4,6 +4,7 @@ using ForumWebsite.Dtos.ForumThreads;
 using ForumWebsite.Dtos.Auths;
 using ForumWebsite.Models;
 using ForumWebsite.Dtos.Users;
+using ForumWebsite.Dtos.Votes;
 
 namespace ForumWebsite.Mapping
 {
@@ -31,10 +32,15 @@ namespace ForumWebsite.Mapping
             CreateMap<User, PublicUserDto>();
             CreateMap<AdminUserDto, User>();
             CreateMap<User, AdminUserDto>();
-
+            CreateMap<UserBaseDto, User>();
+            CreateMap<User, UserBaseDto>();
 
             CreateMap<ForumThread, ForumThreadDto>();
             CreateMap<CreateForumThreadDto, ForumThread>();
+
+
+            //CreateMap<ForumThreadVoteDto, ForumThreadVote>();
+            //CreateMap<CommentVoteDto, CommentVote>();
         }
     }
 }

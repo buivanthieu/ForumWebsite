@@ -1,4 +1,9 @@
-﻿using ForumWebsite.Models;
+﻿using AutoMapper;
+using ForumWebsite.Dtos.Users;
+using ForumWebsite.Dtos.Votes;
+using ForumWebsite.Models;
+using ForumWebsite.Repositories.Comments;
+using ForumWebsite.Repositories.Users;
 using ForumWebsite.Repositories.Votes;
 
 namespace ForumWebsite.Services.Votes
@@ -6,16 +11,18 @@ namespace ForumWebsite.Services.Votes
     public class CommentVoteService : ICommentVoteService
     {
         private readonly ICommentVoteRepository _commentVoteRepository;
-        public CommentVoteService(ICommentVoteRepository commentVoteRepository)
+        private readonly IMapper _mapper;
+        private readonly IUserRepository _userRepository;
+        private readonly ICommentRepository _commentRepository;
+        public CommentVoteService(ICommentVoteRepository commentVoteRepository, IMapper mapper, 
+            IUserRepository userRepository, ICommentRepository commentRepository)
         {
             _commentVoteRepository = commentVoteRepository;
+            _mapper = mapper;
+            _userRepository = userRepository;
+            _commentRepository = commentRepository;
         }
 
-        public async Task<int> GetVoteCommentCount(int commentId)
-        {
-            var countVote = await _commentVoteRepository.GetCommentVoteCount(commentId);
-            return countVote;
-        }
 
         public async Task VoteComment(int userId, int commentId, bool isUpVote)
         {
@@ -44,6 +51,30 @@ namespace ForumWebsite.Services.Votes
                 };
                 await _commentVoteRepository.AddCommentVote(newVote);
             }
+
+            await _commentVoteRepository.UpdateCommentReputation(commentId);
+            var ownerId = await _commentVoteRepository.GetCommentOwnerId(commentId);
+            if (ownerId.HasValue)
+            {
+                await _userRepository.UpdateUserReputation(ownerId.Value);
+            }
+        }
+
+        public async Task<CommentVoteDto> GetCommentVote(int commentId)
+        {
+            var comment  = await _commentRepository.GetCommentById(commentId);
+            var userVoteUp = await _commentVoteRepository.GetUserVoteUpComment(commentId);
+            var userVoteDown = await _commentVoteRepository.GetUserVoteDownComment(commentId);
+            var upDtos = _mapper.Map<ICollection<UserBaseDto>>(userVoteUp);
+            var downDtos = _mapper.Map<ICollection<UserBaseDto>>(userVoteDown);
+            return new CommentVoteDto
+            {
+                Reputation  = comment.Reputation,
+                CountDownVote = downDtos.Count,
+                CountUpVote = upDtos.Count,
+                UsersVoteDown = downDtos,
+                UsersVoteUp = upDtos,
+            };
         }
     }
 }

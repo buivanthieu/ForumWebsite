@@ -8,6 +8,14 @@ namespace ForumWebsite.Repositories.Votes
         Task AddForumThreadVote(ForumThreadVote vote);
         Task UpdateForumThreadVote(ForumThreadVote vote);
         Task DeleteForumThreadVote(ForumThreadVote vote);
-        Task<int> GetCountVoteForumThread(int forumThreadId);
+        Task<int> GetCountUpVoteForumThread(int forumThreadId);
+        Task<int> GetCountDownVoteForumThread(int forumThreadId);
+        Task<ICollection<User>> GetUserVoteUpThread(int forumThreadId);
+        Task<ICollection<User>> GetUserVoteDownThread(int forumThreadId);
+
+        Task UpdateForumThreadReputation(int threadId);
+        Task<int?> GetForumThreadOwnerId(int threadId);
+
+
     }
 }

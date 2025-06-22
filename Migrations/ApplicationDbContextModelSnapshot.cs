@@ -40,6 +40,9 @@ namespace ForumWebsite.Migrations
                     b.Property<int?>("ParentCommentId")
                         .HasColumnType("int");
 
+                    b.Property<int>("Reputation")
+                        .HasColumnType("int");
+
                     b.Property<int?>("ThreadId")
                         .HasColumnType("int");
 
@@ -92,6 +95,9 @@ namespace ForumWebsite.Migrations
 
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<int>("Reputation")
+                        .HasColumnType("int");
 
                     b.Property<string>("Title")
                         .IsRequired()
