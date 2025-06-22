@@ -6,7 +6,7 @@
         public string Title { get; set; } = null!;
         public string Content { get; set; } = null!;
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
-
+        public int Reputation { get; set; }
         public int TopicId { get; set; }
         public Topic? Topic { get; set; }
         public int? UserId { get; set; }
@@ -14,6 +14,7 @@
 
         public ICollection<Comment>? Comments { get; set; }
         public ICollection<ForumThreadVote>? Votes { get; set; }
+        public ICollection<ThreadTag>? ThreadTags { get; set; }
     }
 
 }

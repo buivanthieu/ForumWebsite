@@ -15,8 +15,7 @@ namespace ForumWebsite.Repositories.Votes
 
         public async Task<ForumThreadVote> GetForumThreadVote(int userId, int forumThreadId)
         {
-            var vote = await _context.ForumThreadVotes.FirstOrDefaultAsync(cv => cv.UserId == userId && cv.ForumThreadId == forumThreadId)
-                       ?? throw new KeyNotFoundException("key is null");
+            var vote = await _context.ForumThreadVotes.FirstOrDefaultAsync(cv => cv.UserId == userId && cv.ForumThreadId == forumThreadId);
             return vote;
         }
 
@@ -37,15 +36,54 @@ namespace ForumWebsite.Repositories.Votes
             _context.ForumThreadVotes.Remove(vote);
             await _context.SaveChangesAsync();
         }
-        public async Task<int> GetCountVoteForumThread(int forumThreadId)
+        public async Task<int> GetCountUpVoteForumThread(int forumThreadId)
         {
             var upVotes = await _context.ForumThreadVotes
                 .CountAsync(v => v.ForumThreadId == forumThreadId && v.IsUpvote);
+            return upVotes;
+        }
+        public async Task<int> GetCountDownVoteForumThread(int forumThreadId)
+        {
             var downVotes = await _context.ForumThreadVotes
                 .CountAsync(v => v.ForumThreadId == forumThreadId && !v.IsUpvote);
-            return upVotes - downVotes;
+            return downVotes;
+        }
+        public async Task<ICollection<User>> GetUserVoteUpThread(int forumThreadId)
+        {
+            var userList = await _context.ForumThreadVotes
+                .Where(v => v.ForumThreadId == forumThreadId && v.IsUpvote)
+                .Select(v => v.User)
+                .ToListAsync();
+            return userList;
+        }
+        public async Task<ICollection<User>> GetUserVoteDownThread(int forumThreadId)
+        {
+            var userList = await _context.ForumThreadVotes
+                .Where(v => v.ForumThreadId == forumThreadId && !v.IsUpvote)
+                .Select(v => v.User)
+                .ToListAsync();
+            return userList;
         }
 
-      
+        public async Task UpdateForumThreadReputation(int threadId)
+        {
+            var up = await _context.ForumThreadVotes.CountAsync(v => v.ForumThreadId == threadId && v.IsUpvote);
+            var down = await _context.ForumThreadVotes.CountAsync(v => v.ForumThreadId == threadId && !v.IsUpvote);
+
+            var thread = await _context.ForumThreads.FindAsync(threadId);
+            if (thread != null)
+            {
+                thread.Reputation = Math.Max(0, up - down);
+                await _context.SaveChangesAsync();
+            }
+        }
+
+        public async Task<int?> GetForumThreadOwnerId(int threadId)
+        {
+            return await _context.ForumThreads
+                .Where(c => c.Id == threadId)
+                .Select(c => (int?)c.UserId)
+                .FirstOrDefaultAsync();
+        }
     }
 }

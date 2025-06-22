@@ -8,7 +8,10 @@ namespace ForumWebsite.Repositories.Votes
         Task AddCommentVote(CommentVote vote);
         Task UpdateCommentVote(CommentVote vote);
         Task DeleteCommentVote(CommentVote vote);
-        Task<int> GetCommentVoteCount(int commentId);
-        //Task<int> GetCommentVoteCount(int userId);
+        Task<ICollection<User>> GetUserVoteUpComment(int commentId);
+        Task<ICollection<User>> GetUserVoteDownComment(int commentId);
+        Task UpdateCommentReputation(int commentId);
+        Task<int?> GetCommentOwnerId(int commentId);
+
     }
 }

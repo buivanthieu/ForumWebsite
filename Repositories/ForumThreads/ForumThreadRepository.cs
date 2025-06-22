@@ -36,7 +36,7 @@ namespace ForumWebsite.Repositories.ForumThreads
 
         public async Task<ForumThread> GetForumThreadById(int id)
         {
-            var forumThread = await _context.ForumThreads.FindAsync($"{id}")
+            var forumThread = await _context.ForumThreads.FindAsync(id)
                           ?? throw new KeyNotFoundException("key is null");
 
             return forumThread;

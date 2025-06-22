@@ -94,6 +94,8 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IForumThreadService, ForumThreadService>();
 builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<ICommentVoteService,  CommentVoteService>();
+builder.Services.AddScoped<IForumThreadVoteService, ForumThreadVoteService>();
 
 
 var app = builder.Build();

@@ -11,5 +11,7 @@ namespace ForumWebsite.Repositories.Users
         Task AddUser(User user);
         Task UpdateUser(User user);
         Task DeleteUser(int id);
+
+        Task UpdateUserReputation(int userId);
     }
 }

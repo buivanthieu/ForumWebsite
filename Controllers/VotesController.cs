@@ -49,14 +49,14 @@ namespace ForumWebsite.Controllers
         [HttpGet("get-comment-vote")]
         public async Task<IActionResult> CountCommentVote(int commentId)
         {
-            var result = await _commentVoteService.GetVoteCommentCount(commentId);
+            var result = await _commentVoteService.GetCommentVote(commentId);
             return Ok(result);
         }
 
         [HttpGet("get-thread-vote")]
-        public async Task<IActionResult> CountForumThreadVote(int threadId)
+        public async Task<IActionResult> ForumThreadVote(int threadId)
         {
-            var result = await _forumThreadVoteService.GetVoteThreadCount(threadId);
+            var result = await _forumThreadVoteService.GetForumThreadVote(threadId);
             return Ok(result);
 
         }
