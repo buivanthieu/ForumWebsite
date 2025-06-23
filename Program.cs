@@ -1,11 +1,16 @@
 ﻿using ForumWebsite.Datas;
 using ForumWebsite.Repositories.Comments;
 using ForumWebsite.Repositories.ForumThreads;
+using ForumWebsite.Repositories.Tags;
+using ForumWebsite.Repositories.ThreadTags;
+using ForumWebsite.Repositories.Topics;
 using ForumWebsite.Repositories.Users;
 using ForumWebsite.Repositories.Votes;
 using ForumWebsite.Services.Auths;
 using ForumWebsite.Services.Comments;
 using ForumWebsite.Services.ForumThreads;
+using ForumWebsite.Services.Tags;
+using ForumWebsite.Services.Topics;
 using ForumWebsite.Services.Users;
 using ForumWebsite.Services.Votes;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
@@ -88,7 +93,9 @@ builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 builder.Services.AddScoped<IForumThreadRepository, ForumThreadRepository>();
 builder.Services.AddScoped<ICommentVoteRepository, CommentVoteRepository>();
 builder.Services.AddScoped<IForumThreadVoteRepository, ForumThreadVoteRepository>();
-
+builder.Services.AddScoped<ITopicRepository, TopicRepository>();
+builder.Services.AddScoped<ITagRepository, TagRepository>();
+builder.Services.AddScoped<IThreadTagRepository, ThreadTagRepository>();
 
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IForumThreadService, ForumThreadService>();
@@ -96,7 +103,8 @@ builder.Services.AddScoped<ICommentService, CommentService>();
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<ICommentVoteService,  CommentVoteService>();
 builder.Services.AddScoped<IForumThreadVoteService, ForumThreadVoteService>();
-
+builder.Services.AddScoped<ITopicService, TopicService>();
+builder.Services.AddScoped<ITagService, TagService>();
 
 var app = builder.Build();
 Console.WriteLine("🛠️ Secret key backend đang dùng: " + secretKey);

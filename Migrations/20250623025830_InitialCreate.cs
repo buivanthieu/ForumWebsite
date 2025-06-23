@@ -12,6 +12,20 @@ namespace ForumWebsite.Migrations
         protected override void Up(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.CreateTable(
+                name: "Tags",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    Name = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Description = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Tags", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Topics",
                 columns: table => new
                 {
@@ -144,6 +158,30 @@ namespace ForumWebsite.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ThreadTags",
+                columns: table => new
+                {
+                    ForumThreadId = table.Column<int>(type: "int", nullable: false),
+                    TagId = table.Column<int>(type: "int", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ThreadTags", x => new { x.ForumThreadId, x.TagId });
+                    table.ForeignKey(
+                        name: "FK_ThreadTags_ForumThreads_ForumThreadId",
+                        column: x => x.ForumThreadId,
+                        principalTable: "ForumThreads",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ThreadTags_Tags_TagId",
+                        column: x => x.TagId,
+                        principalTable: "Tags",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "CommentVotes",
                 columns: table => new
                 {
@@ -203,6 +241,11 @@ namespace ForumWebsite.Migrations
                 name: "IX_ForumThreadVotes_ForumThreadId",
                 table: "ForumThreadVotes",
                 column: "ForumThreadId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ThreadTags_TagId",
+                table: "ThreadTags",
+                column: "TagId");
         }
 
         /// <inheritdoc />
@@ -215,7 +258,13 @@ namespace ForumWebsite.Migrations
                 name: "ForumThreadVotes");
 
             migrationBuilder.DropTable(
+                name: "ThreadTags");
+
+            migrationBuilder.DropTable(
                 name: "Comments");
+
+            migrationBuilder.DropTable(
+                name: "Tags");
 
             migrationBuilder.DropTable(
                 name: "ForumThreads");
