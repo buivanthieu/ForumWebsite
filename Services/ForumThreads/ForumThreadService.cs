@@ -1,6 +1,8 @@
 ﻿using AutoMapper;
+using ForumWebsite.Dtos.Comments;
 using ForumWebsite.Dtos.ForumThreads;
 using ForumWebsite.Models;
+using ForumWebsite.Repositories.Comments;
 using ForumWebsite.Repositories.ForumThreads;
 using ForumWebsite.Repositories.ThreadTags;
 using ForumWebsite.Repositories.Users;
@@ -14,13 +16,16 @@ namespace ForumWebsite.Services.ForumThreads
         private readonly IMapper _mapper;
         private readonly IUserRepository _userRepository;
         private readonly IThreadTagRepository _threadTagRepository;
+        private readonly ICommentRepository _commentRepository;
         public ForumThreadService(IForumThreadRepository forumThreadRepository, IMapper mapper, 
-            IUserRepository userRepository, IThreadTagRepository threadTagRepository)
+            IUserRepository userRepository, IThreadTagRepository threadTagRepository,
+            ICommentRepository commentRepository)
         {
             _forumThreadRepository = forumThreadRepository;
             _mapper = mapper;
             _userRepository = userRepository;
             _threadTagRepository = threadTagRepository;
+            _commentRepository = commentRepository;
         }
 
         public async Task<ForumThreadDto> CreateThread(CreateForumThreadDto dto, int userId)
@@ -66,24 +71,97 @@ namespace ForumWebsite.Services.ForumThreads
             await _userRepository.UpdateUser(user);
         }
 
-        public async Task<ForumThreadDto> GetThreadById(int threadId)
+        
+
+        public async Task<ForumThreadDetailDto> GetThreadById(int threadId)
         {
             var thread = await _forumThreadRepository.GetForumThreadById(threadId);
-            return _mapper.Map<ForumThreadDto>(thread);
+            var comments = await _commentRepository.GetCommentsByThreadId(threadId);
+            var dto = _mapper.Map<ForumThreadDetailDto>(thread);
+            dto.DisplayName = thread.User?.DisplayName ?? "Unknown";
+            dto.TopicName = thread.Topic?.Name ?? "Unknown";
+            dto.TagIds = thread.ThreadTags?
+               .Select(tt => tt.TagId)
+               .ToList();
+
+            dto.TagNames = thread.ThreadTags?
+                .Select(tt => tt.Tag?.Name ?? "")
+                .ToList();
+            dto.Comments = _mapper.Map<ICollection<CommentDto>>(comments);
+
+            return dto;
         }
 
         public async Task<ICollection<ForumThreadDto>> GetThreads()
         {
             var threads = await _forumThreadRepository.GetAllForumThreads();
-            return _mapper.Map<ICollection<ForumThreadDto>>(threads);
+
+            var result = threads.Select(thread => new ForumThreadDto
+            {
+                Id = thread.Id,
+                Title = thread.Title,
+                Content = thread.Content,
+                CreatedAt = thread.CreatedAt,
+                TopicId = thread.TopicId,
+                TopicName = thread.Topic?.Name ?? "Unknown",
+                UserId = thread.UserId ?? 0,
+                DisplayName = thread.User?.DisplayName ?? "Unknown",
+                TagIds = thread.ThreadTags?
+                    .Select(tt => tt.TagId)
+                    .ToList(),
+                TagNames = thread.ThreadTags?
+                    .Select(tt => tt.Tag?.Name ?? "")
+                    .ToList()
+            }).ToList();
+
+            return result;
         }
+
 
         public async Task<ICollection<ForumThreadDto>> SearchThreadByName(string name)
         {
             var threads = await _forumThreadRepository.SearchThreadByName(name);
-            return _mapper.Map<ICollection<ForumThreadDto>>(threads);
+            var result = threads.Select(thread => new ForumThreadDto
+            {
+                Id = thread.Id,
+                Title = thread.Title,
+                Content = thread.Content,
+                CreatedAt = thread.CreatedAt,
+                TopicId = thread.TopicId,
+                TopicName = thread.Topic?.Name ?? "Unknown",
+                UserId = thread.UserId ?? 0,
+                DisplayName = thread.User?.DisplayName ?? "Unknown",
+                TagIds = thread.ThreadTags?
+                    .Select(tt => tt.TagId)
+                    .ToList(),
+                TagNames = thread.ThreadTags?
+                    .Select(tt => tt.Tag?.Name ?? "")
+                    .ToList()
+            }).ToList();
+            return result;
         }
-
+        public async Task<ICollection<ForumThreadDto>> FillterThreadByTopicAndTag(int? topicId, List<int> tagIds)
+        {
+            var threads = await _forumThreadRepository.GetForumThreadByTopicAndTag(topicId, tagIds);
+            var result = threads.Select(thread => new ForumThreadDto
+            {
+                Id = thread.Id,
+                Title = thread.Title,
+                Content = thread.Content,
+                CreatedAt = thread.CreatedAt,
+                TopicId = thread.TopicId,
+                TopicName = thread.Topic?.Name ?? "Unknown",
+                UserId = thread.UserId ?? 0,
+                DisplayName = thread.User?.DisplayName ?? "Unknown",
+                TagIds = thread.ThreadTags?
+                    .Select(tt => tt.TagId)
+                    .ToList(),
+                TagNames = thread.ThreadTags?
+                    .Select(tt => tt.Tag?.Name ?? "")
+                    .ToList()
+            }).ToList();
+            return result;
+        }
         public async Task UpdateThread(int threadId, UpdateForumThreadDto updateForumThreadDto, int userId)
         {
             var thread = await _forumThreadRepository.GetForumThreadById(threadId);

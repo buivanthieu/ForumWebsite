@@ -139,6 +139,42 @@ namespace ForumWebsite.Migrations
                     b.ToTable("ForumThreadVotes");
                 });
 
+            modelBuilder.Entity("ForumWebsite.Models.Tag", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("Description")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Tags");
+                });
+
+            modelBuilder.Entity("ForumWebsite.Models.ThreadTag", b =>
+                {
+                    b.Property<int>("ForumThreadId")
+                        .HasColumnType("int");
+
+                    b.Property<int>("TagId")
+                        .HasColumnType("int");
+
+                    b.HasKey("ForumThreadId", "TagId");
+
+                    b.HasIndex("TagId");
+
+                    b.ToTable("ThreadTags");
+                });
+
             modelBuilder.Entity("ForumWebsite.Models.Topic", b =>
                 {
                     b.Property<int>("Id")
@@ -301,6 +337,25 @@ namespace ForumWebsite.Migrations
                     b.Navigation("User");
                 });
 
+            modelBuilder.Entity("ForumWebsite.Models.ThreadTag", b =>
+                {
+                    b.HasOne("ForumWebsite.Models.ForumThread", "ForumThread")
+                        .WithMany("ThreadTags")
+                        .HasForeignKey("ForumThreadId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("ForumWebsite.Models.Tag", "Tag")
+                        .WithMany("ThreadTags")
+                        .HasForeignKey("TagId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("ForumThread");
+
+                    b.Navigation("Tag");
+                });
+
             modelBuilder.Entity("ForumWebsite.Models.Comment", b =>
                 {
                     b.Navigation("Replies");
@@ -312,7 +367,14 @@ namespace ForumWebsite.Migrations
                 {
                     b.Navigation("Comments");
 
+                    b.Navigation("ThreadTags");
+
                     b.Navigation("Votes");
+                });
+
+            modelBuilder.Entity("ForumWebsite.Models.Tag", b =>
+                {
+                    b.Navigation("ThreadTags");
                 });
 
             modelBuilder.Entity("ForumWebsite.Models.Topic", b =>

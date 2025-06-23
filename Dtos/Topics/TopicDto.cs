@@ -1,10 +1,9 @@
-﻿namespace ForumWebsite.Models
+﻿namespace ForumWebsite.Dtos.Topics
 {
-    public class Topic
+    public class TopicDto
     {
         public int Id { get; set; }
         public string Name { get; set; } = null!;
         public string Description { get; set; } = null!;
-        public ICollection<ForumThread> ForumThreads { get; set; } = new List<ForumThread>();
     }
 }

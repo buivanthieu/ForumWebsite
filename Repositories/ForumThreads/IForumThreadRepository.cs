@@ -7,6 +7,8 @@ namespace ForumWebsite.Repositories.ForumThreads
         Task<ICollection<ForumThread>> GetAllForumThreads();
         Task<ForumThread> GetForumThreadById(int id);
         Task<ICollection<ForumThread>> SearchThreadByName(string name);
+        Task<ICollection<ForumThread>> GetForumThreadByTopicAndTag(int? topicId, List<int>? tagIds);
+
         Task AddForumThread(ForumThread forumThread);
         Task DeleteForumThread(int id);
         Task UpdateForumThread(ForumThread forumThread);

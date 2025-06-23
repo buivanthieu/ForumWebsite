@@ -5,6 +5,8 @@ using ForumWebsite.Dtos.Auths;
 using ForumWebsite.Models;
 using ForumWebsite.Dtos.Users;
 using ForumWebsite.Dtos.Votes;
+using ForumWebsite.Dtos.Topics;
+using ForumWebsite.Dtos.Tags;
 
 namespace ForumWebsite.Mapping
 {
@@ -25,19 +27,23 @@ namespace ForumWebsite.Mapping
             CreateMap<User, LoginSuccessfullyDto>();
 
             CreateMap<User, CurrentUserDto>();
-            CreateMap<CurrentUserDto, User>();
-            CreateMap<User, UpdateCurrentUserDto>();
             CreateMap<UpdateCurrentUserDto, User>();
-            CreateMap<PublicUserDto, User>();
             CreateMap<User, PublicUserDto>();
-            CreateMap<AdminUserDto, User>();
             CreateMap<User, AdminUserDto>();
-            CreateMap<UserBaseDto, User>();
             CreateMap<User, UserBaseDto>();
 
             CreateMap<ForumThread, ForumThreadDto>();
+            CreateMap<ForumThread, ForumThreadDetailDto>();
             CreateMap<CreateForumThreadDto, ForumThread>();
 
+
+            CreateMap<Topic, TopicDto>();
+            CreateMap<CreateTopicDto, Topic>();
+            CreateMap<UpdateTopicDto, Topic>();
+
+            CreateMap<Tag, TagDto>();
+            CreateMap<CreateTagDto, Tag>();
+            CreateMap<UpdateTagDto, Tag>(); 
 
             //CreateMap<ForumThreadVoteDto, ForumThreadVote>();
             //CreateMap<CommentVoteDto, CommentVote>();

@@ -19,10 +19,10 @@
         public int TotalThreads { get; set; }
         public int TotalComments { get; set; }
 
-        public ICollection<ForumThread>? ForumThreads { get; set; }
-        public ICollection<Comment>? Comments { get; set; }
-        public ICollection<CommentVote>? CommentVotes { get; set; }
-        public ICollection<ForumThreadVote>? ForumThreadVotes { get; set; }
+        public ICollection<ForumThread> ForumThreads { get; set; } = new List<ForumThread>();
+        public ICollection<Comment> Comments { get; set; } = new List<Comment>();
+        public ICollection<CommentVote> CommentVotes { get; set; } = new List<CommentVote>();
+        public ICollection<ForumThreadVote> ForumThreadVotes { get; set; } = new List<ForumThreadVote>();
     }
 
 }

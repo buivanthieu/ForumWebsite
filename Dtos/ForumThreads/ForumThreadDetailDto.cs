@@ -1,7 +1,8 @@
-﻿
+﻿using ForumWebsite.Dtos.Comments;
+
 namespace ForumWebsite.Dtos.ForumThreads
 {
-    public class ForumThreadDto
+    public class ForumThreadDetailDto
     {
         public int Id { get; set; }
         public string Title { get; set; } = null!;
@@ -11,8 +12,11 @@ namespace ForumWebsite.Dtos.ForumThreads
         public string TopicName { get; set; } = null!;
         public int UserId { get; set; }
         public string DisplayName { get; set; } = null!;
-        public ICollection<int>? TagIds { get; set; }
-        public ICollection<string>? TagNames { get; set; }
+        public ICollection<int>? TagIds { get; set; } 
+        public ICollection<string>? TagNames { get; set; } 
+        public int Reputation {  get; set; }
+        public ICollection<CommentDto>? Comments { get; set; }
+
         
     }
 }

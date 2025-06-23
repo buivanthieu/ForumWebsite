@@ -15,8 +15,8 @@
         public int? ParentCommentId { get; set; }
         public Comment? ParentComment { get; set; }
 
-        public ICollection<Comment>? Replies { get; set; }
-        public ICollection<CommentVote>? Votes { get; set; }
+        public ICollection<Comment> Replies { get; set; } = new List<Comment>();
+        public ICollection<CommentVote> Votes { get; set; } = new List<CommentVote>();
     }
 
 }
