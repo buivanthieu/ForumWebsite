@@ -17,6 +17,8 @@
 
         public ICollection<Comment> Replies { get; set; } = new List<Comment>();
         public ICollection<CommentVote> Votes { get; set; } = new List<CommentVote>();
+        public ICollection<Report> Reports { get; set; } = new List<Report>();
+
     }
 
 }

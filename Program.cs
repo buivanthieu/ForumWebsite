@@ -22,6 +22,16 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowFE", policy =>
+    {
+        policy.WithOrigins("http://localhost:5173")
+              .AllowAnyHeader()
+              .AllowAnyMethod()
+              .AllowCredentials();
+    });
+});
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
@@ -106,6 +116,8 @@ builder.Services.AddScoped<IForumThreadVoteService, ForumThreadVoteService>();
 builder.Services.AddScoped<ITopicService, TopicService>();
 builder.Services.AddScoped<ITagService, TagService>();
 
+
+
 var app = builder.Build();
 Console.WriteLine("🛠️ Secret key backend đang dùng: " + secretKey);
 Console.WriteLine("🌍 ENV đang chạy: " + builder.Environment.EnvironmentName);
@@ -117,16 +129,11 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-app.Use(async (context, next) =>
-{
-    Console.WriteLine("🛠️ Secret key backend đang dùng: " + secretKey);
-    Console.WriteLine("🌍 ENV đang chạy: " + builder.Environment.EnvironmentName);
-    await next();
-});
+app.UseRouting();
+app.UseCors("AllowFE");
 
 app.UseAuthentication();
 app.UseAuthorization();
-
 app.MapControllers();
 
 app.Run();
