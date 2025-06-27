@@ -1,4 +1,6 @@
 ﻿
+using ForumWebsite.Dtos.Votes;
+
 namespace ForumWebsite.Dtos.ForumThreads
 {
     public class ForumThreadDto
@@ -13,6 +15,6 @@ namespace ForumWebsite.Dtos.ForumThreads
         public string DisplayName { get; set; } = null!;
         public ICollection<int>? TagIds { get; set; }
         public ICollection<string>? TagNames { get; set; }
-        
+        public ForumThreadVoteDto? ForumThreadVoteDto { get; internal set; }
     }
 }

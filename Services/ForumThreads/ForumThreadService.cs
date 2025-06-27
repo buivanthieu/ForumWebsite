@@ -6,6 +6,7 @@ using ForumWebsite.Repositories.Comments;
 using ForumWebsite.Repositories.ForumThreads;
 using ForumWebsite.Repositories.ThreadTags;
 using ForumWebsite.Repositories.Users;
+using ForumWebsite.Services.Votes;
 using System.Threading;
 
 namespace ForumWebsite.Services.ForumThreads
@@ -17,15 +18,17 @@ namespace ForumWebsite.Services.ForumThreads
         private readonly IUserRepository _userRepository;
         private readonly IThreadTagRepository _threadTagRepository;
         private readonly ICommentRepository _commentRepository;
+        private readonly IForumThreadVoteService _forumThreadVoteService;
         public ForumThreadService(IForumThreadRepository forumThreadRepository, IMapper mapper, 
             IUserRepository userRepository, IThreadTagRepository threadTagRepository,
-            ICommentRepository commentRepository)
+            ICommentRepository commentRepository, IForumThreadVoteService forumThreadVoteService)
         {
             _forumThreadRepository = forumThreadRepository;
             _mapper = mapper;
             _userRepository = userRepository;
             _threadTagRepository = threadTagRepository;
             _commentRepository = commentRepository;
+            _forumThreadVoteService = forumThreadVoteService;
         }
 
         public async Task<ForumThreadDto> CreateThread(CreateForumThreadDto dto, int userId)
@@ -95,8 +98,7 @@ namespace ForumWebsite.Services.ForumThreads
         public async Task<ICollection<ForumThreadDto>> GetThreads()
         {
             var threads = await _forumThreadRepository.GetAllForumThreads();
-
-            var result = threads.Select(thread => new ForumThreadDto
+            var resultTasks = threads.Select(async thread => new ForumThreadDto
             {
                 Id = thread.Id,
                 Title = thread.Title,
@@ -111,10 +113,12 @@ namespace ForumWebsite.Services.ForumThreads
                     .ToList(),
                 TagNames = thread.ThreadTags?
                     .Select(tt => tt.Tag?.Name ?? "")
-                    .ToList()
-            }).ToList();
+                    .ToList(),
+                ForumThreadVoteDto = await _forumThreadVoteService.GetForumThreadVote(thread.Id),
+            });
 
-            return result;
+            var result = await Task.WhenAll(resultTasks);
+            return result.ToList();
         }
 
 

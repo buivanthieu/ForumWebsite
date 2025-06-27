@@ -14,6 +14,8 @@ namespace ForumWebsite.Datas
         public DbSet<CommentVote> CommentVotes { get; set; }
         public DbSet<Tag> Tags { get; set; }
         public DbSet<ThreadTag> ThreadTags { get; set; }
+        public DbSet<Report> Reports { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<Comment>()
@@ -84,6 +86,35 @@ namespace ForumWebsite.Datas
                 .HasOne(tt => tt.Tag)
                 .WithMany(t => t.ThreadTags)
                 .HasForeignKey(tt => tt.TagId);
+
+            modelBuilder.Entity<Report>()
+                .HasOne(r => r.Thread)
+                .WithMany(ft => ft.Reports)
+                .HasForeignKey(r => r.ThreadId);
+
+            modelBuilder.Entity<Report>()
+                .HasOne(r => r.Reporter)
+                .WithMany(ur => ur.Reports)
+                .HasForeignKey(r =>r.ReporterId);
+
+            modelBuilder.Entity<Report>()
+                .HasOne(r => r.Comment)
+                .WithMany(c => c.Reports)
+                .HasForeignKey(r => r.CommentId);
+            modelBuilder.Entity<Report>()
+                .HasIndex(r => new { r.ReporterId, r.ThreadId })
+                .IsUnique()
+                .HasFilter("[ThreadId] IS NOT NULL");
+            modelBuilder.Entity<Report>()
+                .HasIndex(r => new { r.ReporterId, r.CommentId })
+                .IsUnique()
+                .HasFilter("[CommentId] IS NOT NULL");
+
+            modelBuilder.Entity<Notification>()
+                .HasOne(n => n.Receiver)
+                .WithMany(u => u.Notifications)
+                .HasForeignKey(n => n.ReceiverId)
+                .OnDelete(DeleteBehavior.Cascade);
 
         }
     }
