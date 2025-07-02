@@ -11,10 +11,12 @@
         public Topic? Topic { get; set; }
         public int? UserId { get; set; }
         public User? User { get; set; }
-
+       
         public ICollection<Comment> Comments { get; set; } = new List<Comment>();
         public ICollection<ForumThreadVote> Votes { get; set; } = new List<ForumThreadVote>();
         public ICollection<ThreadTag> ThreadTags { get; set; } = new List<ThreadTag>();
+        public ICollection<Report> Reports { get; set; } = new List<Report>();
+
     }
 
 }

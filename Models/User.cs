@@ -23,6 +23,9 @@
         public ICollection<Comment> Comments { get; set; } = new List<Comment>();
         public ICollection<CommentVote> CommentVotes { get; set; } = new List<CommentVote>();
         public ICollection<ForumThreadVote> ForumThreadVotes { get; set; } = new List<ForumThreadVote>();
+        public ICollection<Report> Reports { get; set; } = new List<Report>();
+        public ICollection<Notification> Notifications { get; set; } = new List<Notification>();
+
     }
 
 }

@@ -37,6 +37,7 @@ namespace ForumWebsite.Repositories.Tags
             if (existingTag != null)
             {
                 existingTag.Name = tag.Name;
+                existingTag.Description = tag.Description;
                 await _context.SaveChangesAsync();
             }
         }
